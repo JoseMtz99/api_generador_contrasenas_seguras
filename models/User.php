@@ -5,9 +5,7 @@ class User
     private $table_name = "users";
 
     public $id;
-    public $n_control;
     public $name;
-    public $entry_date;
     public $email;
     public $created_at;
 
@@ -19,15 +17,13 @@ class User
     public function create()
     {
         $query = "INSERT INTO " . $this->table_name . " 
-                  SET n_control=:n_control, name=:name, email=:email";
+                  SET name=:name, email=:email";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->n_control = htmlspecialchars(strip_tags($this->n_control));
         $this->name = htmlspecialchars(strip_tags($this->name));
         $this->email = htmlspecialchars(strip_tags($this->email));
 
-        $stmt->bindParam(":n_control", $this->n_control);
         $stmt->bindParam(":name", $this->name);
         $stmt->bindParam(":email", $this->email);
 
@@ -40,7 +36,7 @@ class User
 
     public function read()
     {
-        $query = "SELECT * 
+        $query = "SELECT id, name, email, created_at 
                   FROM " . $this->table_name . " 
                   ORDER BY created_at DESC";
 
@@ -51,10 +47,11 @@ class User
 
     public function readOne()
     {
-        $query = "SELECT id, n_control, name, entry_date, email, created_at
+        $query = "SELECT id, name, email, created_at 
                   FROM " . $this->table_name . " 
                   WHERE id = :id 
                   LIMIT 1";
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $this->id);
         $stmt->execute();
@@ -62,9 +59,7 @@ class User
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            $this->n_control = $row['n_control'];
             $this->name = $row['name'];
-            $this->entry_date = $row['entry_date'];
             $this->email = $row['email'];
             $this->created_at = $row['created_at'];
             return true;
@@ -75,17 +70,15 @@ class User
     public function update()
     {
         $query = "UPDATE " . $this->table_name . " 
-                  SET n_control = :n_control, name = :name, email = :email 
+                  SET name = :name, email = :email
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->n_control = htmlspecialchars(strip_tags($this->n_control));
         $this->name = htmlspecialchars(strip_tags($this->name));
         $this->email = htmlspecialchars(strip_tags($this->email));
         $this->id = htmlspecialchars(strip_tags($this->id));
 
-        $stmt->bindParam(':n_control', $this->n_control);
         $stmt->bindParam(':name', $this->name);
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':id', $this->id);
@@ -95,6 +88,7 @@ class User
         }
         return false;
     }
+
     public function delete()
     {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";

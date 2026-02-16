@@ -18,7 +18,7 @@ class UserResource
     // GET /api/v1/users
     public function index()
     {
-        //header("Content-Type: application/json");
+        header("Content-Type: application/json");
 
         $stmt = $this->user->read();
         $num = $stmt->rowCount();
@@ -31,9 +31,7 @@ class UserResource
                 extract($row);
                 $user_item = array(
                     "id" => $id,
-                    "n_control" => $n_control,
                     "name" => $name,
-                    "entry_date" => $entry_date,
                     "email" => $email,
                     "created_at" => $created_at
                 );
@@ -58,9 +56,7 @@ class UserResource
         if ($this->user->readOne()) {
             $user_arr = array(
                 "id" => $this->user->id,
-                "n_control" => $this->user->n_control,
                 "name" => $this->user->name,
-                "entry_date" => $this->user->entry_date,
                 "email" => $this->user->email,
                 "created_at" => $this->user->created_at
             );
@@ -81,8 +77,6 @@ class UserResource
         $data = json_decode(file_get_contents("php://input"));
 
         if (!empty($data->name) && !empty($data->email)) {
-
-            $this->user->n_control = $data->n_control;
             $this->user->name = $data->name;
             $this->user->email = $data->email;
 
@@ -98,7 +92,7 @@ class UserResource
             }
         } else {
             http_response_code(400);
-            echo json_encode(array("message" => "Datos incompletos"));
+            echo json_encode(array("message" => "Datos incompletos. Se requiere name y email"));
         }
     }
 
@@ -112,7 +106,6 @@ class UserResource
         $this->user->id = $id;
 
         if (!empty($data->name) && !empty($data->email)) {
-            $this->user->n_control = $data->n_control;
             $this->user->name = $data->name;
             $this->user->email = $data->email;
 
@@ -125,7 +118,7 @@ class UserResource
             }
         } else {
             http_response_code(400);
-            echo json_encode(array("message" => "Datos incompletos"));
+            echo json_encode(array("message" => "Datos incompletos. Se requiere name y email"));
         }
     }
 
