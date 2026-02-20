@@ -43,4 +43,29 @@ class PasswordService
             'require_each' => true
         ];
     }
+    public function validate(string $password, array $requirements): array
+    {
+        $errors = [];
+
+        if (strlen($password) < ($requirements['minLength'] ?? 8)) {
+            $errors[] = "Longitud insuficiente";
+        }
+
+        if (!empty($requirements['requireUppercase']) && !preg_match('/[A-Z]/', $password)) {
+            $errors[] = "Debe contener mayúscula";
+        }
+
+        if (!empty($requirements['requireNumbers']) && !preg_match('/[0-9]/', $password)) {
+            $errors[] = "Debe contener número";
+        }
+
+        if (!empty($requirements['requireSymbols']) && !preg_match('/[^a-zA-Z0-9]/', $password)) {
+            $errors[] = "Debe contener símbolo";
+        }
+
+        return [
+            "valid" => empty($errors),
+            "errors" => $errors
+        ];
+    }
 }

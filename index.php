@@ -1,13 +1,18 @@
 <?php
-require_once __DIR__ . '/../../models/PasswordService.php';
+
+require_once __DIR__ . '/models/PasswordService.php';
 
 header('Content-Type: application/json');
 
 $service = new PasswordService();
 
-try {
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+$basePath = '/examen1';
+$route = str_replace($basePath, '', $uri);
+
+try {
+    if ($route === '/api/password' && $_SERVER['REQUEST_METHOD'] === 'GET') {
 
         $password = $service->generate($_GET);
 
@@ -17,7 +22,7 @@ try {
         ]);
         exit;
     }
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($route === '/api/passwords' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $input = json_decode(file_get_contents("php://input"), true);
 
@@ -29,9 +34,21 @@ try {
         ]);
         exit;
     }
+    if ($route === '/api/password/validate' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    http_response_code(405);
-    echo json_encode(["error" => "Método no permitido"]);
+        $input = json_decode(file_get_contents("php://input"), true);
+
+        $result = $service->validate(
+            $input['password'],
+            $input['requirements']
+        );
+
+        echo json_encode($result);
+        exit;
+    }
+
+    http_response_code(404);
+    echo json_encode(["error" => "Ruta no encontrada"]);
 
 } catch (InvalidArgumentException $e) {
 
