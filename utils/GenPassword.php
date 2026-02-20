@@ -150,7 +150,17 @@ function generate_password(int $length = 16, array $opts = []): string {
  * @return array lista de contraseñas
  */
 function generate_passwords(int $count = 5, int $length = 16, array $opts = []): array {
-    //Completar el código
+    if ($count < 1) {
+        throw new InvalidArgumentException("El número de contraseñas debe ser >= 1");
+    }
+
+    $passwords = [];
+
+    for ($i = 0; $i < $count; $i++) {
+        $passwords[] = generate_password($length, $opts);
+    }
+
+    return $passwords;
 }
 
 
