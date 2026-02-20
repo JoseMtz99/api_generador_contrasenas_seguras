@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../models/PasswordService.php';
-    
+
 header('Content-Type: application/json');
 
 $service = new PasswordService();
@@ -14,6 +14,18 @@ try {
         echo json_encode([
             "success" => true,
             "password" => $password
+        ]);
+        exit;
+    }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        $input = json_decode(file_get_contents("php://input"), true);
+
+        $passwords = $service->generateMultiple($input);
+
+        echo json_encode([
+            "success" => true,
+            "passwords" => $passwords
         ]);
         exit;
     }
